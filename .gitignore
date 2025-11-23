@@ -1,0 +1,8 @@
+# Fichiers de configuration sensibles
+config/api_config.json
+.env
+*.key
+*.token
+# Fichiers compilés par Python
+__pycache__/
+*.pyc

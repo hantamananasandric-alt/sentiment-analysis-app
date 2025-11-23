@@ -1,0 +1,18 @@
+# AJOUTS uniquement - ne remplace pas ton fichier existant
+
+# Pour l'augmentation de données
+nlpaug==1.1.11
+googletrans==4.0.0-rc1
+
+# Pour les visualisations avancées
+plotly==5.17.0
+wordcloud==1.9.3
+
+# Pour le deep learning français
+fr-core-news-sm==3.8.0
+
+# Pour XGBoost (si pas déjà présent)
+xgboost==1.7.6
+
+# Pour le monitoring
+tqdm==4.66.1

@@ -1,29 +1,44 @@
 # src/preprocessing.py
+
 import re
 import nltk
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
+import spacy
 
-# Assure-toi d'avoir téléchargé les ressources NLTK une fois :
-# >>> import nltk
-# >>> nltk.download('punkt'); nltk.download('stopwords'); nltk.download('wordnet')
+# --- CHARGEMENT DU MODÈLE SPACY ---
+# S'assurer que le modèle est chargé une seule fois
+try:
+    nlp = spacy.load("fr_core_news_sm")
+except OSError:
+    print("Modèle spaCy 'fr_core_news_sm' non trouvé. Veuillez l'installer.")
+    exit()
+
 
 class TweetPreprocessor:
-    def __init__(self):
-        self.stop_words = set(stopwords.words('french')) | set(stopwords.words('english'))
-        self.lemmatizer = WordNetLemmatizer()
+    """Nettoie et normalise le texte pour l'analyse de sentiment."""
 
-    def clean_tweet(self, tweet: str) -> str:
-        if not isinstance(tweet, str):
-            return ""
-        t = tweet.lower()
-        t = re.sub(r'http\S+', '', t)          # urls
-        t = re.sub(r'@\w+', '', t)            # mentions
-        t = re.sub(r'#\w+', '', t)            # hashtags (on peut garder le mot si on veut)
-        t = re.sub(r'[^\w\s]', ' ', t)        # ponctuation -> espace
-        t = re.sub(r'\d+', '', t)             # chiffres
-        tokens = word_tokenize(t)
-        tokens = [self.lemmatizer.lemmatize(tok) for tok in tokens
-                  if tok not in self.stop_words and len(tok) > 2]
+    def __init__(self):
+        # Stop words en français et en anglais
+        self.stop_words = set(stopwords.words('french')) | set(stopwords.words('english'))
+
+    def clean_text(self, text: str) -> str:
+        # 1. Mise en minuscules
+        text = text.lower()
+
+        # 2. Suppression des liens web
+        text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+
+        # 3. Suppression des mentions (@user) et hashtags (#tag)
+        text = re.sub(r'@\w+|#', '', text)
+
+        # 4. Suppression de la ponctuation et des caractères spéciaux (sauf espaces)
+        text = re.sub(r'[^a-z\s]', '', text)
+
+        # 5. Tokenisation, lemmatisation (via spaCy) et suppression des stop words
+        doc = nlp(text)
+        tokens = [
+            token.lemma_ for token in doc
+            if token.text not in self.stop_words and token.is_alpha
+        ]
+
         return " ".join(tokens)
