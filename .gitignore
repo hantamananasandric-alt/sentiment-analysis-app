@@ -6,3 +6,16 @@ config/api_config.json
 # Fichiers compilés par Python
 __pycache__/
 *.pyc
+# Fichiers et dossiers à ignorer
+# Cache Python
+__pycache__/
+*.pyc
+
+# Dossiers de données
+data/
+
+# Environnement virtuel
+venv/
+
+# Secrets
+.env
